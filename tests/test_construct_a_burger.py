@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 from praktikum.burger import Burger
+from unittest.mock import Mock
 
 
 class TestBurger:
@@ -77,37 +78,53 @@ class TestBurger:
 
     def test_get_receipt(self):
         burger = Burger()
+
+
         bun_mock = Mock()
         bun_mock.get_name.return_value = "black bun"
         bun_mock.get_price.return_value = 100
+
+        burger.set_buns(bun_mock)
+        receipt = burger.get_receipt()
+
+        expected_receipt = (
+            "(==== black bun ====)\n"
+            "(==== black bun ====)\n\n"
+            "Price: 200"
+        )
+        assert receipt == expected_receipt
 
         sauce_mock = Mock()
         sauce_mock.get_type.return_value = "SAUCE"
         sauce_mock.get_name.return_value = "hot sauce"
         sauce_mock.get_price.return_value = 50
 
+        burger.add_ingredient(sauce_mock)
+        receipt = burger.get_receipt()
+        expected_receipt = (
+            "(==== black bun ====)\n"
+            "= sauce hot sauce =\n"
+            "(==== black bun ====)\n\n"
+            "Price: 250"
+        )
+        assert receipt == expected_receipt
+
+
         filling_mock = Mock()
         filling_mock.get_type.return_value = "FILLING"
         filling_mock.get_name.return_value = "cutlet"
         filling_mock.get_price.return_value = 100
 
-
-        burger.set_buns(bun_mock)
-        receipt = burger.get_receipt()
-        assert "(==== black bun ====)" in receipt
-        assert "Price: 200" in receipt
-
-
-        burger.add_ingredient(sauce_mock)
-        receipt = burger.get_receipt()
-        assert "= sauce hot sauce =" in receipt
-        assert "Price: 250" in receipt
-
-
         burger.add_ingredient(filling_mock)
         receipt = burger.get_receipt()
-        assert "= filling cutlet =" in receipt
-        assert "Price: 350" in receipt
+        expected_receipt = (
+            "(==== black bun ====)\n"
+            "= sauce hot sauce =\n"
+            "= filling cutlet =\n"
+            "(==== black bun ====)\n\n"
+            "Price: 350"
+        )
+        assert receipt == expected_receipt
 
     def test_multiple_operations(self):
         burger = Burger()
